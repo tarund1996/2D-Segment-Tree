@@ -1,0 +1,90 @@
+
+*	Date : 22nd April 2016
+*	@Author : Ankita Victor, Shyam KB, Tarun Dutt
+
+PROBLEM NAME : Pyramid
+
+COMPILATION:
+Move into the folder "IMT2014-005-050-059".
+Use the command 'make all' to generate output.
+
+TIME COMPLEXITY : O(mn lg(mn)) for each test case.
+Worst case running time : 1.096s for a 1000 x 1000 input.
+
+A. Sources
+	http://codeforces.com/blog/entry/3327 - Blog entry by paladin8 on Segment Tree.
+	
+B. Data structures used
+	2-Dimensional segment tree
+
+C. Notable defects
+	None found. Works for all test cases generated within the specified limits.
+
+D. Individual contribution
+	Ankita : Independant algorithm, code for test case generation, debugging.
+	Shyam  : Independant algorithm, 2-D segment tree code, psuedocode. 
+	Tarun  : Independant algorithm, rest of code, documentation. 
+	
+E. Psuedocode :
+	/*
+	RMQ(x1,y1,x2,y2,x3,y2,x4,y4,cut):
+	
+		if x1==x3 and x2==x4 and y1==y3 and y2==y4
+			return segt[i][j]
+		if cut == 0
+			if interval present completely in left half 
+				return RMQ(x1,y1,x2,y2,x3,y3,x4,(y4+y3)/2,i,(2*j)+1,1)
+			else if interval present completely in right half
+				return RMQ(x1,y1,x2,y2,x3,((y3+y4)/2+1),x4,y4,i,(2*j)+2,1)
+			else
+				min1 = RMQ(x1,y1,x2,(y4+y3)/2,x3,y3,x4,(y4+y3)/2,i,(2*j)+1,1);
+				min2 = RMQ(x1,(((y3+y4)/2)+1),x2,y2,x3,(((y3+y4)/2)+1),x4,y4,i,(2*j)+2,1);
+				return min(min1,min2)
+		else
+			if interval present completely in upper half
+				return RMQ(x1,y1,x2,y2,x3,y3,(x3+x4)/2,y4,(2*i)+1,j,0)
+			else if interval present completely in lower half
+				return RMQ(x1,y1,x2,y2,((x3+x4)/2)+1,y3,x4,y4,(2*i)+2,j,0);
+			else
+				min1 = RMQ(x1,y1,(x3+x4)/2,y2,x3,y3,(x3+x4)/2,y4,(2*i)+1,j,0);
+				min2 = RMQ(((x3+x4)/2)+1,y1,x2,y2,((x3+x4)/2)+1,y3,x4,y4,(2*i)+2,j,0);
+				return min(min1,min2);
+	BUILD(SMALL):
+
+		Let segt be the 2-d segment tree
+		make rows and columns to nearest power of 2 by appending infinity into array
+		
+		for i from rows-1 to (2*rows)-1
+			for j from (2*columns)-2 to 0 //decrement by 2
+				segt[i][(j/2)-1]=min(segt[i][j],segt[i][j-1])
+			
+		for j from 0 to (2*columns)-1
+			for i from (2*rows)-2 to 0 //decrement by 2
+				segt[(i/2)-1][j] = min(segt[i][j],segt[i-1][j])
+	
+	pyramid()
+		Let PSUM be the array of partial sums. PSUM[i][j] represents sum of elements in rectangle from (0,0) to (i,j)
+		Let BIG be the array of partial sums. BIG[i][j] represents sum of elements in rectangle from (i,j) to (i+b,j+a)
+		Let SMALL be the array of partial sums. SMALL[i][j] represents sum of elements in rectangle from (i,j) to (i+d,j+c) 
+		
+		Compute PSUM
+		Compute BIG and SMALL from PSUM	
+		
+		BUILD(SMALL)// BUILDS 2-D SEGMENT TREE ON ARRAY SMALL
+		
+		max = infinity	
+	
+		for i from 0 to n-b
+			for j from 0 to m-c
+				res = RMQ(i+1,j+1,i+b-1-d,j+a-1-c,0,0,rows-1,columns-1,0)
+				if BIG[i][j] - res > max
+					max = BIG[i][j]-res
+					x=i
+					y=j
+		for i from x+1 to x+b-1-d
+			for j from y+1 to y+a-1-c
+				if SMALL[i][j] == res 
+					x1=i
+	 				y1=j
+		PRINT x,y,x1,y1	
+	*/				
